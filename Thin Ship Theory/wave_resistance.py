@@ -14,6 +14,13 @@ from scipy import optimize
 class wave_resistance:
 
     def __init__(self, sources, tank):
+        """
+        Initialise sources
+
+        Inputs:
+            sources -- A sources object
+            tank -- a tank object
+        """
         self.sources = sources
         self.tank = tank
         self.elevation = []
