@@ -43,6 +43,10 @@ class create_hull:
         self.mesh = stl_mesh.Mesh.from_file(self.file_loc)
         self.panel_centre = []
         self.panel_area = []
+        self.L = 0  # Length
+        self.B = 0  # Breadth
+        self.T = 0  # Draft
+        self.D = 0  # Depth
 
         self.load_hull()
 
@@ -50,6 +54,13 @@ class create_hull:
         """
         Reload the hull after a transformation of the mesh
         """
+# =============================================================================
+#       Hull Particulars
+# =============================================================================
+        self.L = np.amax(self.mesh.x) - np.amin(self.mesh.x)
+        self.B = np.amax(self.mesh.y) - np.amin(self.mesh.y)
+        self.T = abs(np.amin(self.mesh.z))
+        self.D = np.amax(self.mesh.z) - np.amin(self.mesh.z)
 
         panel_x = (self.mesh.v0[:, 0]+self.mesh.v1[:, 0]+self.mesh.v2[:, 0])/3
         panel_y = (self.mesh.v0[:, 1]+self.mesh.v1[:, 1]+self.mesh.v2[:, 1])/3
