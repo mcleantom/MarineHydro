@@ -47,7 +47,7 @@ class create_hull:
         self.B = 0  # Breadth
         self.T = 0  # Draft
         self.D = 0  # Depth
-
+        self.centreline = 0  # Y coordinate of the centreline
         self.load_hull()
 
     def load_hull(self):
@@ -61,6 +61,7 @@ class create_hull:
         self.B = np.amax(self.mesh.y) - np.amin(self.mesh.y)
         self.T = abs(np.amin(self.mesh.z))
         self.D = np.amax(self.mesh.z) - np.amin(self.mesh.z)
+        self.centreline = np.average(self.mesh.y)
 
         panel_x = (self.mesh.v0[:, 0]+self.mesh.v1[:, 0]+self.mesh.v2[:, 0])/3
         panel_y = (self.mesh.v0[:, 1]+self.mesh.v1[:, 1]+self.mesh.v2[:, 1])/3
