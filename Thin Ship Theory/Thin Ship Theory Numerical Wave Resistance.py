@@ -12,6 +12,9 @@ from wave_resistance import wave_resistance
 
 tank = tank_properties()
 tank.M = 5
+tank.D = 2
+tank.B = 10
+
 hull = create_hull('5s.stl')
 sources = create_sources(hull, tank)
 Rw = wave_resistance(sources, tank)

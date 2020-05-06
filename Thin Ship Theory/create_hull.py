@@ -48,6 +48,7 @@ class create_hull:
         self.T = 0  # Draft
         self.D = 0  # Depth
         self.centreline = 0  # Y coordinate of the centreline
+        self.WSA = 0
         self.load_hull()
 
     def load_hull(self):
@@ -74,6 +75,8 @@ class create_hull:
         AB = self.mesh.v1-self.mesh.v0
         AC = self.mesh.v2-self.mesh.v0
         self.panel_area = np.sum(0.5*abs(np.cross(AB, AC)), axis=1)
+
+        self.WSA = sum(self.panel_area * (self.panel_centre[:, 2]<0))
 
 #    def panalize(self):
 #        """
