@@ -26,6 +26,7 @@ class create_sources:
         self.tank = tank
         self.strength = np.zeros(len(body.panel_centre))
         self.coords = body.panel_centre
+        self.coords[:, 0] = 0 # Put all the sources in the centreline
         self.calc_sources()
 
     def calc_sources(self):
