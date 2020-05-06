@@ -35,13 +35,13 @@ class wave_resistance:
         """
         X = m * np.pi/self.tank.B
         k = self.tank.k0 * (1 + (1 + (2 * X/self.tank.k0))**0.5) / 2  # Initial guess
-        yn = optimize.newton(self.f, k, args=(m, self.tank))
+        yn = optimize.newton(self.f, k, args=(m,))
         thetan = np.arcsin(((2*np.pi*m)/self.tank.B)/yn)
 
         return [yn, thetan]
 
-    def f(self, x, n, tank):
-        return x**2-tank.k0*x*np.tanh(x*tank.H)-1*((2*n*np.pi)/(tank.B))**2
+    def f(self, x, n,):
+        return x**2-self.tank.k0*x*np.tanh(x*self.tank.H)-1*((2*n*np.pi)/(self.tank.B))**2
 
     def elevation_terms(self, m):
         coeff = (16*np.pi*self.tank.U)/(self.tank.B*self.tank.g)
