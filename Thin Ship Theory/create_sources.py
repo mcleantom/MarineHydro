@@ -13,6 +13,16 @@ import numpy as np
 
 
 class create_sources:
+    """
+    Creates all the sources for a hull
+
+    Attributes:
+        strength                    --  An array of source strengths
+        coords                      --  The source's [X,Y,Z] coordinates
+
+    Methods:
+        calc_sources                -- Calculate the strength of the sources
+    """
 
     def __init__(self, body, tank):
         """
@@ -21,18 +31,25 @@ class create_sources:
         Inputs:
             body -- A create_hull object
             tank -- a tank object
+
+        Outputs:
+            A sources object
         """
         self.body = body
         self.tank = tank
         self.strength = np.zeros(len(body.panel_centre))
         self.coords = body.panel_centre
         self.coords[:, 0] = body.centreline  # Put sources on the centreline
+
         self.calc_sources()
 
     def calc_sources(self):
-        self.strength = self.source_strength(self.body.mesh.normals,
-                                             [self.tank.U, 0, 0],
-                                             self.body.panel_area)
+        """
+        Calculate the strength of sources
+        """
+        self.strength = self.calc_source_strength(self.body.mesh.normals,
+                                                  [self.tank.U, 0, 0],
+                                                  self.body.panel_area)
 
         # ====================================================================
         #       Remove sources above waterline
@@ -51,7 +68,7 @@ class create_sources:
 
 #        print(self.strength)
 
-    def source_strength(self, n, U, A):
+    def calc_source_strength(self, n, U, A):
         """
         Returns the strength of a source, given the normal vector, the onset
         free stream vector and the panel area
