@@ -54,10 +54,6 @@ class wave_resistance:
         zeroth_component_to_rw = self.zeroth_wave_component(k0, zeta0_squared)
         self.RWm[0] = coeff*zeroth_component_to_rw
 
-# =============================================================================
-#       Other wave components
-# =============================================================================
-
         for i in np.arange(1, self.tank.M):
             km, thetam = self.wave_components(i)
             etam, num = self.elevation_terms(i)
@@ -121,10 +117,6 @@ class wave_resistance:
             n   --  The wave harmonic to calculate for
         """
         return x**2 - self.tank.k0*x*np.tanh(x*self.tank.H) - 1*((2*n*np.pi)/(self.tank.B))**2
-
-# =============================================================================
-#
-# =============================================================================
 
     def elevation_terms(self, m):
         """
