@@ -36,7 +36,9 @@ class wave_resistance:
         self.elevation = []
         self.RWm = np.zeros(tank.M)
         self.kBar = 0
-
+        self.k0 = 0
+        self.theta0 = 0
+        self.zeta0_squared = 0
         self.calc_Rwm()
 
     def calc_Rwm(self):
@@ -47,11 +49,11 @@ class wave_resistance:
 
         coeff = 0.25*self.tank.rho*self.tank.g*self.tank.B
 
-        k0, theta0 = self.wave_components(0)
+        self.k0, self.theta0 = self.wave_components(0)
         eta0, nu0 = self.elevation_terms(0)
-        zeta0_squared = eta0**2 + nu0**2
+        self.zeta0_squared = eta0**2 + nu0**2
+        zeroth_component_to_rw = self.zeroth_wave_component()
 
-        zeroth_component_to_rw = self.zeroth_wave_component(k0, zeta0_squared)
         self.RWm[0] = coeff*zeroth_component_to_rw
 
         for i in np.arange(1, self.tank.M):
@@ -62,18 +64,18 @@ class wave_resistance:
             mth_component_to_rw = self.mth_wave_component(km, thetam, zetam_squared)
             self.RWm[i] = coeff*mth_component_to_rw
 
-    def zeroth_wave_component(self, k0, zeta0_squared):
+    def zeroth_wave_component(self):
         """
         Calculates the component to Rw for the 0th wave component
         """
-        if (2*k0*self.tank.H) > 50:
+        if (2*self.k0*self.tank.H) > 50:
             frac_term = 0
         else:
-            top_frac = 2*k0*self.tank.H
-            bottom_frac = np.sinh(2*k0*self.tank.H)
+            top_frac = 2*self.k0*self.tank.H
+            bottom_frac = np.sinh(2*self.k0*self.tank.H)
             frac_term = top_frac/bottom_frac
 
-        return zeta0_squared*(1-frac_term)
+        return self.zeta0_squared*(1-frac_term)
     
     def mth_wave_component(self, km, thetam, zetam_squared):
         """
@@ -89,9 +91,6 @@ class wave_resistance:
             frac2 = top_frac/bottom_frac
 
         return zetam_squared*(1-(frac1*(1+frac2)))
-# =============================================================================
-# POSSIBLE CALCULATING WAVE COMPONENTS IS WRONG. READ PAPER AND FIX.
-# =============================================================================
 
     def wave_components(self, m):
         """
@@ -142,14 +141,14 @@ class wave_resistance:
         Calculates the first fraction term in the wave elevation equation
         returns ((Kbar + km*cos^(thetam))/(1+sin^2(thetam)-Kbar*H*sech^2(km*H)))
         """
-        top_frac = (self.kbar+km*(np.cos(thetam)**2))
+        top_frac = (self.k0+km*(np.cos(thetam)**2))
 
         if km*self.tank.H > 20:
             sechKH = 0
         else:
             sechKH = 1/np.cosh(km*self.tank.H)
 
-        bottom_frac = (1 + (np.sin(thetam)**2) - self.kbar*self.tank.H*(sechKH**2))
+        bottom_frac = (1 + (np.sin(thetam)**2) - self.k0*self.tank.H*(sechKH**2))
         first_frac = top_frac/bottom_frac
         return first_frac
 
@@ -162,17 +161,21 @@ class wave_resistance:
         for i in range(len(self.sources.strength)):
             strength_i = self.sources.strength[i]
             exp_term = np.exp(-1*km * self.tank.H)
+
             cosh_term = np.cosh(km*(self.tank.H * self.sources.coords[i][2]))
+
             matrix_term = np.array([[np.cos(km * self.sources.coords[i][0] *
                                             np.cos(thetam))],
                                     [np.sin(km*self.sources.coords[i][0] *
                                             np.cos(thetam))]])
+
             if m % 2 == 0:  # Even m
                 multiplier = np.cos((m*np.pi*self.sources.coords[i][1]) /
                                     self.tank.B)
             else:  # Odd m
                 multiplier = np.sin((m*np.pi*self.sources.coords[i][1]) /
                                     self.tank.B)
+                print(multiplier)
 
             summation += strength_i*exp_term*cosh_term*matrix_term*multiplier
 
