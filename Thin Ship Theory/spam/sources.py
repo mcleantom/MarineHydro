@@ -62,9 +62,9 @@ class create_sources:
         #       Remove sources with negative y (body assumed symetric,
         #       accounted for in the math)
         # ====================================================================
-        for i in range(len(self.strength)):
-            if self.body.panel_centre[i][1] < 0:
-                    self.strength[i] = 0
+#        for i in range(len(self.strength)):
+#            if self.body.panel_centre[i][1] < 0:
+#                    self.strength[i] = 0
 
 #        print(self.strength)
 

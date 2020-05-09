@@ -102,7 +102,7 @@ class wave_resistance:
         """
         X = m * np.pi/self.tank.B  # Wall condition
         k = self.tank.k0 * (1 + (1 + (2 * X/self.tank.k0))**0.5) / 2  # Initial guess
-        km = optimize.newton(self.f, k, args=(m,))
+        km = optimize.newton(self.f, k, args=(m,)) #  Km = The roots of the equation
         thetan = np.arcsin(((2*np.pi*m)/self.tank.B)/km)
 
         return [km, thetan]
@@ -175,7 +175,6 @@ class wave_resistance:
             else:  # Odd m
                 multiplier = np.sin((m*np.pi*self.sources.coords[i][1]) /
                                     self.tank.B)
-                print(multiplier)
 
             summation += strength_i*exp_term*cosh_term*matrix_term*multiplier
 
