@@ -4,18 +4,18 @@ Created on Tue May  5 14:26:52 2020
 
 @author: mclea
 """
-
 import spam.hull as hull
 import spam.resistance as resistance
 import spam.sources as sources
 import spam.tank as tank
 
 tank = tank.tank_properties()
-tank.M = 5
-tank.H = 2
-tank.B = 10
+tank.M = 5  # Maximum number of wave harmonics to calculate
+tank.H = 2  # The tank height
+tank.B = 10  # The tank breadth
 
-hull = hull.create_hull('5s.stl')
+hull = hull.create_hull("files\\models\\5s.stl")
+
 sources = sources.create_sources(hull, tank)
 Rw = resistance.wave_resistance(sources, tank)
 

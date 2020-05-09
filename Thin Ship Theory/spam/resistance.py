@@ -51,7 +51,7 @@ class wave_resistance:
 
         self.k0, self.theta0 = self.wave_components(0)
         eta0, nu0 = self.elevation_terms(0)
-        self.zeta0_squared = eta0**2 + nu0**2
+        self.zeta0_squared = self.calc_zeta_squared(eta0, nu0)
         zeroth_component_to_rw = self.zeroth_wave_component()
 
         self.RWm[0] = coeff*zeroth_component_to_rw
@@ -59,11 +59,17 @@ class wave_resistance:
         for i in np.arange(1, self.tank.M):
             km, thetam = self.wave_components(i)
             etam, num = self.elevation_terms(i)
-            zetam_squared = etam**2 + num**2
+            zetam_squared = self.calc_zeta_squared(etam, num)
 
             mth_component_to_rw = self.mth_wave_component(km, thetam, zetam_squared)
             self.RWm[i] = coeff*mth_component_to_rw
 
+    def calc_zeta_squared(self, eta, nu):
+        """
+        Returns Zeta squared for a given eta and nu
+        """
+        return eta**2 + nu**2
+    
     def zeroth_wave_component(self):
         """
         Calculates the component to Rw for the 0th wave component
