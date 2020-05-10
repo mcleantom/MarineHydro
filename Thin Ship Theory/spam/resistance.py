@@ -40,6 +40,8 @@ class wave_resistance:
         self.theta0 = 0
         self.zeta0_squared = 0
         self.calc_Rwm()
+        
+        return None
 
     def calc_Rwm(self):
         """
@@ -63,13 +65,15 @@ class wave_resistance:
 
             mth_component_to_rw = self.mth_wave_component(km, thetam, zetam_squared)
             self.RWm[i] = coeff*mth_component_to_rw
+        
+        return None
 
     def calc_zeta_squared(self, eta, nu):
         """
         Returns Zeta squared for a given eta and nu
         """
         return eta**2 + nu**2
-    
+
     def zeroth_wave_component(self):
         """
         Calculates the component to Rw for the 0th wave component
@@ -82,7 +86,7 @@ class wave_resistance:
             frac_term = top_frac/bottom_frac
 
         return self.zeta0_squared*(1-frac_term)
-    
+
     def mth_wave_component(self, km, thetam, zetam_squared):
         """
         Calculates the component to Rw for the mth wave component

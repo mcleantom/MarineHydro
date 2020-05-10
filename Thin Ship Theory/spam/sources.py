@@ -41,6 +41,8 @@ class create_sources:
         self.coords = body.panel_centre
         self.coords[:, 1] = body.centreline  # Put sources on the centreline
         self.calc_sources()
+        
+        return None
 
     def calc_sources(self):
         """
@@ -59,6 +61,8 @@ class create_sources:
         for i in range(len(self.strength)):
             if self.body.panel_centre[i][1] < 0:
                     self.strength[i] = 0
+
+        return None
 
     def calc_source_strength(self, n, U, A):
         """

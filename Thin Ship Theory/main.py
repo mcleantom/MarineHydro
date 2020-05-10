@@ -14,7 +14,7 @@ tank.M = 5  # Maximum number of wave harmonics to calculate
 tank.H = 2  # The tank height
 tank.B = 10  # The tank breadth
 
-hull = hull.create_hull("files\\models\\5s.stl")
+hull = hull.create_hull("data\\models\\5s.stl")
 
 sources = sources.create_sources(hull, tank)
 Rw = resistance.wave_resistance(sources, tank)
