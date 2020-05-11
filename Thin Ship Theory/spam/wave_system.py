@@ -62,24 +62,24 @@ class surface_elevation:
         
         """
         x_sigma, y_sigma, z_sigma = self.separate_coords(self.sources.coords)
-        self.m_matrix = np.array([self.m, ] * len(y_sigma)).T
-        self.k_matrix = np.array([self.km, ] * len(y_sigma)).T
-        self.theta_matrix = np.array([self.thetam, ] * len(y_sigma)).T
+        m_matrix = np.array([self.m, ] * len(y_sigma)).T
+        k_matrix = np.array([self.km, ] * len(y_sigma)).T
+        theta_matrix = np.array([self.thetam, ] * len(y_sigma)).T
 
-        self.sigma_term = self.sources.strength
-        self.exp_term = np.exp(-1*self.k_matrix*self.tank.H)
-        self.cosh_term = np.cosh((self.k_matrix*(self.tank.H+z_sigma)))
-        self.matrix_term = np.array([np.cos(self.k_matrix*x_sigma*np.cos(self.theta_matrix)),
-                                     np.sin(self.k_matrix*x_sigma*np.cos(self.theta_matrix))])
-        self.mpiyoB = self.m_matrix*np.pi*y_sigma/self.tank.B
-        self.cos_sin_term = np.zeros(self.mpiyoB.shape)
-        self.cos_sin_term[::2] = np.cos(self.mpiyoB[::2])
-        self.cos_sin_term[1::2] = np.sin(self.mpiyoB[1::2])
+        sigma_term = self.sources.strength
+        exp_term = np.exp(-1*k_matrix*self.tank.H)
+        cosh_term = np.cosh((k_matrix*(self.tank.H+z_sigma)))
+        matrix_term = np.array([np.cos(k_matrix*x_sigma*np.cos(theta_matrix)),
+                                     np.sin(k_matrix*x_sigma*np.cos(theta_matrix))])
+        mpiyoB = m_matrix*np.pi*y_sigma/self.tank.B
+        cos_sin_term = np.zeros(mpiyoB.shape)
+        cos_sin_term[::2] = np.cos(mpiyoB[::2])
+        cos_sin_term[1::2] = np.sin(mpiyoB[1::2])
 
-        self.summation_terms = (self.sigma_term*self.exp_term*self.cosh_term*self.matrix_term*self.cos_sin_term)
+        summation_terms = (sigma_term*exp_term*cosh_term*matrix_term*cos_sin_term)
         
-        self.etan = np.sum(self.summation_terms[0], axis=1)
-        self.nun = np.sum(self.summation_terms[1], axis=1)
+        self.etan = np.sum(summation_terms[0], axis=1)
+        self.nun = np.sum(summation_terms[1], axis=1)
         
         return [self.etan, self.nun]
 

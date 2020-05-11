@@ -11,7 +11,7 @@ import spam.wave_system as wave_system
 import numpy as np
 
 tank = tank.tank_properties()
-tank.M = 5  # Maximum number of wave harmonics to calculate
+tank.M = 250  # Maximum number of wave harmonics to calculate
 tank.H = 2  # The tank height
 tank.B = 5  # The tank breadth
 
