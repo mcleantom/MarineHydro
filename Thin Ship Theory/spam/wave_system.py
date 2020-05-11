@@ -12,29 +12,63 @@ from scipy import optimize
 
 class surface_elevation:
     """
-    
+    Creates a wave system for a given tank and distribution of sources within
+    the tank
+
+    Attributes:
+        m       -- Wave harmonics
+        etam    -- Wave amplitude coefficient
+        num     -- Wave amplitude coefficient
+        km      -- Wave number
+        thetam  -- Wave angle
+        Rwm     -- Wave reistance
+
+    Methods:
+        calc_surface_elevation  -- Calculates the surface elevations etam, num
+        calc_Rwm                -- Calculates the wave resistance due to component m
     """
     def __init__(self, tank, sources):
         """
+        Initialises the wave_system class, calculates the wave components and
+        wave reistances for harmonics m.
         """
         self.tank = tank
         self.sources = sources
-        self.etan = self.blank_list()  # Wave amplitude coefficieints = 2*An*cos(en)
-        self.nun = self.blank_list()  # Wave amplitude coefficient = 2*An*sin(en)
+        self.etam = self.blank_list()  # Wave amplitude coefficieints = 2*An*cos(en)
+        self.num = self.blank_list()  # Wave amplitude coefficient = 2*An*sin(en)
         self.km = self.blank_list()
         self.thetam = self.blank_list()
-        self.m = np.arange(0,tank.M)
-#        print(self.etan)
+        self.Rwm = self.blank_list()
+        self.m = np.arange(0, tank.M)
         self.wave_components()
         self.calc_surface_elevation()
+        self.calc_Rwm()
+        return None
+
+    def calc_Rwm(self):
+        """
+        Calculates the wave reistance values at each component
+        """
+        coeff = ((16*np.pi*self.tank.U)/(self.tank.B*self.tank.g))
+        self.zetam = self.etam*self.num
+        # m = 0
+        bracket_term = (1 - ((2*self.km[0]*self.tank.H) /
+                             (np.sinh(2*self.km[0]*self.tank.H))))
+        self.Rwm[0] = coeff*self.zetam[0]*bracket_term
+
+        # m >= 1
+        self.Rwm[1::] = self.calc_rw_summation()
 
         return None
 
-    def calc_Rwp(self):
+    def calc_rw_summation(self):
         """
+        Calculates the summation component in Rw (m>=1)
         """
-#        coeff = self.tank
-        return None
+        bracket_term = 1 + ((2*self.km[1::]*self.tank.H) /
+                            (np.sinh(2*self.km[1::]*self.tank.H)))
+        cos_term = (np.cos(self.thetam[1::])**2)/2
+        return self.zetam[1::]*(1-cos_term*bracket_term)
 
     def blank_list(self):
         """
@@ -57,14 +91,14 @@ class surface_elevation:
         summation_term = self.calc_elevation_summation()
         wave_comps = coeff*frac_term*summation_term
         wave_comps[0] = wave_comps[0] * 0.5
-        self.etan = wave_comps[0]
-        self.nun = wave_comps[1]
+        self.etam = wave_comps[0]
+        self.num = wave_comps[1]
 
         return None
 
     def calc_elevation_summation(self):
         """
-
+        Calculates the summation component in the formula for etam and num
         """
         x_sigma, y_sigma, z_sigma = self.separate_coords(self.sources.coords)
         m_matrix = np.array([self.m, ] * len(y_sigma)).T
@@ -75,7 +109,7 @@ class surface_elevation:
         exp_term = np.exp(-1*k_matrix*self.tank.H)
         cosh_term = np.cosh((k_matrix*(self.tank.H+z_sigma)))
         matrix_term = np.array([np.cos(k_matrix*x_sigma*np.cos(theta_matrix)),
-                                     np.sin(k_matrix*x_sigma*np.cos(theta_matrix))])
+                                np.sin(k_matrix*x_sigma*np.cos(theta_matrix))])
         mpiyoB = m_matrix*np.pi*y_sigma/self.tank.B
         cos_sin_term = np.zeros(mpiyoB.shape)
         cos_sin_term[::2] = np.cos(mpiyoB[::2])
@@ -89,6 +123,9 @@ class surface_elevation:
         return np.array([etan, nun])
 
     def separate_coords(self, coords):
+        """
+        Returns separated coordinates for a given list of coordinates
+        """
         return coords[:, 0].T, coords[:, 1].T, coords[:, 2].T
 
     def wave_components(self):

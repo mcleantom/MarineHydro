@@ -42,7 +42,7 @@ class create_sources:
         self.coords = body.panel_centre
         self.coords[:, 1] = body.centreline  # Put sources on the centreline
         self.calc_sources()
-        
+
         return None
 
     def calc_sources(self):
