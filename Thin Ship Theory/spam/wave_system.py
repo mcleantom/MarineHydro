@@ -48,44 +48,42 @@ class surface_elevation:
         sechKH = (1/(np.cosh(self.tank.H*self.km)))
         bottom_frac = (1 + np.sin(self.thetam)**2 - self.km[0]*self.tank.H*sechKH**2)
         frac_term = top_frac/bottom_frac
-        summation_term = self.calc_summation().T[0]
-
-        wave_comps = coeff*frac_term*summation_term
-        wave_comps[0] = wave_comps[0] * 0.5
-        self.etan = wave_comps[0]
-        self.nun = wave_comps[1]
-        print(wave_comps)
+        summation_term = self.calc_summation()
+#
+#        wave_comps = coeff*frac_term*summation_term
+#        wave_comps[0] = wave_comps[0] * 0.5
+#        self.etan = wave_comps[0]
+#        self.nun = wave_comps[1]
+        
+        return None
 
     def calc_summation(self):
         """
         
         """
-        return_values = np.zeros((len(self.m),2,1))
-        
-        for i in self.m:
-            summation = 0
-            for j in range(self.sources.num_sources):
-                source_strength = self.sources.strength[j]
-                x,y,z = self.separate_coords(self.sources.coords[j])
-                exp_term = np.exp(self.km[i]*z)
-                cosh_term = np.cosh(self.km[i]*(self.tank.H+z))
-                matrix_term = np.array([[np.cos(self.km[i] * x *
-                                            np.cos(self.thetam[i]))],
-                                        [np.sin(self.km[i] * x *
-                                            np.sin(self.thetam[i]))]])
-                if i % 2 == 0:
-                    multiplier = np.cos((i*np.pi*y)/self.tank.B)
-                else:
-                    multiplier = np.sin((i*np.pi*y)/self.tank.B)
-                summation += source_strength*exp_term*cosh_term*matrix_term*multiplier
-                
-            return_values[i] = summation
+        x_sigma, y_sigma, z_sigma = self.separate_coords(self.sources.coords)
+        self.m_matrix = np.array([self.m, ] * len(y_sigma)).T
+        self.k_matrix = np.array([self.km, ] * len(y_sigma)).T
+        self.theta_matrix = np.array([self.thetam, ] * len(y_sigma)).T
 
-        return return_values
+        self.sigma_term = self.sources.strength
+        self.exp_term = np.exp(-1*self.k_matrix*self.tank.H)
+        self.cosh_term = np.cosh((self.k_matrix*(self.tank.H+z_sigma)))
+        self.matrix_term = np.array([np.cos(self.k_matrix*x_sigma*np.cos(self.theta_matrix)),
+                                     np.sin(self.k_matrix*x_sigma*np.cos(self.theta_matrix))])
+    
+        self.cos_term = np.cos((self.m_matrix*np.pi*y_sigma)/self.tank.B)
+
+        self.summation_terms = (self.sigma_term*self.exp_term*self.cosh_term*self.matrix_term*self.cos_term)
+        
+        self.etan = np.sum(self.summation_terms[0], axis=1)
+        self.nun = np.sum(self.summation_terms[1], axis=1)
+        
+        return [self.etan, self.nun]
 
 
     def separate_coords(self, coords):
-        return coords[0], coords[1], coords[2]
+        return coords[:,0].T, coords[:,1].T, coords[:,2].T
 
     def wave_components(self):
         """
