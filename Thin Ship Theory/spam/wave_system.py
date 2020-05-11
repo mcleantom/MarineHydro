@@ -30,6 +30,12 @@ class surface_elevation:
 
         return None
 
+    def calc_Rwp(self):
+        """
+        """
+#        coeff = self.tank
+        return None
+
     def blank_list(self):
         """
         Returns a np array with zeros of a length number of wave components
@@ -48,18 +54,17 @@ class surface_elevation:
         sechKH = (1/(np.cosh(self.tank.H*self.km)))
         bottom_frac = (1 + np.sin(self.thetam)**2 - self.km[0]*self.tank.H*sechKH**2)
         frac_term = top_frac/bottom_frac
-        summation_term = self.calc_summation()
-#
-#        wave_comps = coeff*frac_term*summation_term
-#        wave_comps[0] = wave_comps[0] * 0.5
-#        self.etan = wave_comps[0]
-#        self.nun = wave_comps[1]
-        
+        summation_term = self.calc_elevation_summation()
+        wave_comps = coeff*frac_term*summation_term
+        wave_comps[0] = wave_comps[0] * 0.5
+        self.etan = wave_comps[0]
+        self.nun = wave_comps[1]
+
         return None
 
-    def calc_summation(self):
+    def calc_elevation_summation(self):
         """
-        
+
         """
         x_sigma, y_sigma, z_sigma = self.separate_coords(self.sources.coords)
         m_matrix = np.array([self.m, ] * len(y_sigma)).T
@@ -77,15 +82,14 @@ class surface_elevation:
         cos_sin_term[1::2] = np.sin(mpiyoB[1::2])
 
         summation_terms = (sigma_term*exp_term*cosh_term*matrix_term*cos_sin_term)
-        
-        self.etan = np.sum(summation_terms[0], axis=1)
-        self.nun = np.sum(summation_terms[1], axis=1)
-        
-        return [self.etan, self.nun]
 
+        etan = np.sum(summation_terms[0], axis=1)
+        nun = np.sum(summation_terms[1], axis=1)
+
+        return np.array([etan, nun])
 
     def separate_coords(self, coords):
-        return coords[:,0].T, coords[:,1].T, coords[:,2].T
+        return coords[:, 0].T, coords[:, 1].T, coords[:, 2].T
 
     def wave_components(self):
         """
