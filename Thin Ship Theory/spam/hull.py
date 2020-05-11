@@ -81,7 +81,7 @@ class create_hull:
         AB = self.mesh.v1-self.mesh.v0
         AC = self.mesh.v2-self.mesh.v0
         self.panel_area = np.sum(0.5*abs(np.cross(AB, AC)), axis=1)
-    
+
     def calc_hull_parameters(self):
         """
         Calculate the hull length, breadth, draught, depth and the centreline
