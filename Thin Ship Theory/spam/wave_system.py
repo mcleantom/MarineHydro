@@ -1,14 +1,15 @@
 """
 Classes:
-    wave_resistance()
+    surface_elevation()
 
 Methods:
 
 Imports:
-    numpy
+    numpy, optimize from scipy
 """
 import numpy as np
 from scipy import optimize
+
 
 class surface_elevation:
     """
