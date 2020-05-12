@@ -9,7 +9,7 @@ Imports:
 """
 import numpy as np
 from scipy import optimize
-
+import matplotlib.pyplot as plt
 
 class surface_elevation:
     """
@@ -35,12 +35,12 @@ class surface_elevation:
         """
         self.tank = tank
         self.sources = sources
-        self.etam = self.blank_list()  # Wave amplitude coefficieints = 2*An*cos(en)
-        self.num = self.blank_list()  # Wave amplitude coefficient = 2*An*sin(en)
-        self.km = self.blank_list()
-        self.thetam = self.blank_list()
-        self.Rwm = self.blank_list()
-        self.m = np.arange(0, tank.M)
+        self.xim = self.blank_list()  # Wave amplitude coefficieints = 2*An*cos(en)
+        self.etam = self.blank_list()  # Wave amplitude coefficient = 2*An*sin(en)
+        self.km = self.blank_list()  # Wave numers
+        self.thetam = self.blank_list()  # Wave angles
+        self.Rwm = self.blank_list()  # Components of wave resistance
+        self.m = np.arange(0, tank.M)  # Array of wave components
         self.wave_components()
         self.calc_surface_elevation()
         self.calc_Rwm()
@@ -51,14 +51,14 @@ class surface_elevation:
         Calculates the wave reistance values at each component
         """
         coeff = ((16*np.pi*self.tank.U)/(self.tank.B*self.tank.g))
-        self.zetam = self.etam*self.num
+        self.zetam = self.xim*self.etam
         # m = 0
         bracket_term = (1 - ((2*self.km[0]*self.tank.H) /
                              (np.sinh(2*self.km[0]*self.tank.H))))
         self.Rwm[0] = coeff*self.zetam[0]*bracket_term
 
         # m >= 1
-        self.Rwm[1::] = self.calc_rw_summation()
+        self.Rwm[1::] = coeff*self.calc_rw_summation()
 
         return None
 
@@ -92,8 +92,8 @@ class surface_elevation:
         summation_term = self.calc_elevation_summation()
         wave_comps = coeff*frac_term*summation_term
         wave_comps[0] = wave_comps[0] * 0.5
-        self.etam = wave_comps[0]
-        self.num = wave_comps[1]
+        self.xim = wave_comps[0]
+        self.etam = wave_comps[1]
 
         return None
 
@@ -109,6 +109,8 @@ class surface_elevation:
         sigma_term = self.sources.strength
         exp_term = np.exp(-1*k_matrix*self.tank.H)
         cosh_term = np.cosh((k_matrix*(self.tank.H+z_sigma)))
+
+        # Make a matrix of the cos(mpiy/B) and sin(mpiy/B) terms 
         matrix_term = np.array([np.cos(k_matrix*x_sigma*np.cos(theta_matrix)),
                                 np.sin(k_matrix*x_sigma*np.cos(theta_matrix))])
         mpiyoB = m_matrix*np.pi*y_sigma/self.tank.B
