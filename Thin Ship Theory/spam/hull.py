@@ -91,4 +91,4 @@ class create_hull:
         self.T = abs(np.amin(self.mesh.z))
         self.D = np.amax(self.mesh.z) - np.amin(self.mesh.z)
         self.centreline = np.average(self.mesh.y)
-        self.WSA = sum(self.panel_area * (self.panel_centre[:, 2] < 0))
+        self.WSA = np.sum(self.panel_area[np.argwhere(self.panel_centre[:, 2] < 0)])

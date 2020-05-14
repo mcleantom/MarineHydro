@@ -45,5 +45,5 @@ class tank_properties:
         self.M = 2  # Max wave harmonic
         self.rho = 1000  # Water density
         self.mu = 1.139e-06  # viscosity
-        
+
         return None

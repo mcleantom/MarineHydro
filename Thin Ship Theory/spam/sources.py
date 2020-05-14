@@ -40,7 +40,7 @@ class create_sources:
         self.num_sources = len(body.panel_centre)
         self.strength = np.zeros(self.num_sources)
         self.coords = body.panel_centre
-        self.coords[:, 1] = body.centreline  # Put sources on the centreline
+#        self.coords[:, 1] = body.centreline  # Put sources on the centreline
         self.calc_sources()
 
         return None
@@ -53,15 +53,13 @@ class create_sources:
         self.strength = self.calc_source_strength(self.body.mesh.normals,
                                                   [self.tank.U, 0, 0],
                                                   self.body.panel_area)
+
         # Remove sources above the waterline
-        for i in range(len(self.strength)):
-            if self.body.panel_centre[i][2] > 0:
-                self.strength[i] = 0
+        self.strength[np.argwhere(self.body.panel_centre[:, 2] > 0)] = 0
 
         # Remove sources with a negative y, relative to the centreline
-        for i in range(len(self.strength)):
-            if self.body.panel_centre[i][1] < 0:
-                    self.strength[i] = 0
+#        self.strength[np.argwhere(self.body.panel_centre[:, 1]-
+#                                  self.body.centreline > 0)] = 0
 
         return None
 
