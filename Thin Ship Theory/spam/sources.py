@@ -40,7 +40,7 @@ class create_sources:
         self.num_sources = len(body.panel_centre)
         self.strength = np.zeros(self.num_sources)
         self.coords = body.panel_centre
-#        self.coords[:, 1] = body.centreline  # Put sources on the centreline
+        self.coords[:, 1] = body.centreline  # Put sources on the centreline
         self.calc_sources()
 
         return None
@@ -58,8 +58,8 @@ class create_sources:
         self.strength[np.argwhere(self.body.panel_centre[:, 2] > 0)] = 0
 
         # Remove sources with a negative y, relative to the centreline
-#        self.strength[np.argwhere(self.body.panel_centre[:, 1]-
-#                                  self.body.centreline > 0)] = 0
+        self.strength[np.argwhere(self.body.panel_centre[:, 1] -
+                                  self.body.centreline > 0)] = 0
 
         return None
 

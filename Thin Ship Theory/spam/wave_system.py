@@ -154,9 +154,11 @@ class surface_elevation:
             x   --  The wave number yn
             n   --  The wave harmonic to calculate for
         """
-        return x**2 - self.tank.k0*x*np.tanh(x*self.tank.H) - 1*((2*n*np.pi)/(self.tank.B))**2
+        return (x**2 - self.tank.k0*x*np.tanh(x*self.tank.H) -
+                1*((2*n*np.pi)/(self.tank.B))**2)
 
-    def plot(self, nx=100, minx=-2, maxx=20, ny=100, miny=-3, maxy=3, plot_boat=True):
+    def calc_wave_height(self, nx=500, minx=-1, maxx=20,
+                         ny=100, miny=-3, maxy=3):
         """
         Plot the wave profile
         Inputs:
@@ -167,34 +169,34 @@ class surface_elevation:
             miny    --  Minimum value of y
             maxy    --  Maximum value of y
         """
+        # Set the plot of the tank
         miny = -1*self.tank.B/2
         maxy = -1*miny
         num_points = nx*ny
         x = np.linspace(minx, maxx, nx)
         y = np.linspace(miny, maxy, ny)
-        xx, yy = np.meshgrid(x, y)
-        xx = np.reshape(xx.flatten(), (num_points, 1))
-        yy = yy.flatten()
-        yy = np.reshape(yy.flatten(), (num_points, 1))
+        self.xx, self.yy = np.meshgrid(x, y)
+        self.xx = np.reshape(self.xx.flatten(), (num_points, 1))
+        self.yy = self.yy.flatten()
+        self.yy = np.reshape(self.yy.flatten(), (num_points, 1))
 
-        term1 = self.xim*np.cos(xx*self.km*np.cos(self.thetam))
-        term2 = self.etam*np.sin(xx*self.km*np.cos(self.thetam))
-        term3 = np.cos((self.m*np.pi*yy)/self.tank.B)
-        z_x_y = (term1*term2)*term3
-        z_x_y = np.sum(z_x_y, axis=1)
-        z_x_y[np.argwhere(xx < 0)] = 0
-        z_x_y = z_x_y.reshape(ny, -1)
-        xx = xx.reshape(ny, -1)
-        yy = yy.reshape(ny, -1)
+        # Calculate the wave height
+        term1 = self.xim*np.cos(self.xx*self.km*np.cos(self.thetam))
+        term2 = self.etam*np.sin(self.xx*self.km*np.cos(self.thetam))
+        term3 = np.cos((self.m*np.pi*self.yy)/self.tank.B)
+        self.z_x_y = (term1*term2)*term3
+        self.z_x_y = np.sum(self.z_x_y, axis=1)
+        self.z_x_y[np.argwhere(self.xx < 0)] = 0
+        self.z_x_y = self.z_x_y.reshape(ny, -1)
+        self.xx = self.xx.reshape(ny, -1)
+        self.yy = self.yy.reshape(ny, -1)
 
+    def plot(self, x, y):
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
-        cf = ax.contourf(xx, yy, z_x_y)
+        cf = ax.contourf(self.xx, self.yy, self.z_x_y)
         plt.colorbar(cf, ax=ax)
+        plt.plot(x, y, 'r.')
         plt.xlabel("x (m)")
         plt.ylabel("y (m)")
         plt.title("Wave pattern for a speed of " + str(-1*self.tank.U) + " m/s")
-        
-#        if plot_boat:
-#            below_waterline
-#        fig.colourbar(cf, ax=ax)
