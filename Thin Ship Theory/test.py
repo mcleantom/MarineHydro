@@ -14,11 +14,11 @@ import numpy as np
 # import matplotlib.pyplot as pyplot
 
 tank = tank.tank_properties()
-tank.M = 150  # Maximum number of wave harmonics to calculate
-tank.H = 3.5  # The tank height
+tank.M = 300  # Maximum number of wave harmonics to calculate
+tank.H = 10  # The tank height
 tank.B = 10  # The tank breadth
-tank.U = -5  # The flow speed
-
+tank.U = 6#(9.81/2)**0.5  # The flow speed
+tank.reload()
 hull = hull.create_hull("data\\models\\5s.stl")
 hull.mesh.translate([0, 0, 0])  # Translate X, Y, Z
 hull.load_hull()
@@ -38,6 +38,7 @@ x = np.flip(hull_slice.slice_points[:, 0])
 y = np.flip(hull_slice.slice_points[:, 1])
 waves.plot(x, y)
 
+print(waves.xim)
 
 #plane_normal = [0, 0, 1]  # The plane normal vector
 #plane_origin = [0, 0, 0]  # A point on the plane

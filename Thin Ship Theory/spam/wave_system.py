@@ -89,12 +89,14 @@ class surface_elevation:
         sechKH = (1/(np.cosh(self.tank.H*self.km)))
         bottom_frac = (1 + np.sin(self.thetam)**2 - self.km[0]*self.tank.H*sechKH**2)
         frac_term = top_frac/bottom_frac
+#        print(frac_term)
         summation_term = self.calc_elevation_summation()
         wave_comps = coeff*frac_term*summation_term
         wave_comps[0] = wave_comps[0] * 0.5
         self.xim = wave_comps[0]
+        self.xim = np.nan_to_num(self.xim)
         self.etam = wave_comps[1]
-
+        self.etam = np.nan_to_num(self.etam)
         return None
 
     def calc_elevation_summation(self):
@@ -120,10 +122,10 @@ class surface_elevation:
 
         summation_terms = (sigma_term*exp_term*cosh_term*matrix_term*cos_sin_term)
 
-        etan = np.sum(summation_terms[0], axis=1)
-        nun = np.sum(summation_terms[1], axis=1)
+        xi = np.sum(summation_terms[0], axis=1)
+        eta  = np.sum(summation_terms[1], axis=1)
 
-        return np.array([etan, nun])
+        return np.array([xi, eta])
 
     def separate_coords(self, coords):
         """
@@ -157,7 +159,7 @@ class surface_elevation:
         return (x**2 - self.tank.k0*x*np.tanh(x*self.tank.H) -
                 1*((2*n*np.pi)/(self.tank.B))**2)
 
-    def calc_wave_height(self, nx=500, minx=-1, maxx=20,
+    def calc_wave_height(self, nx=500, minx=-1, maxx=60,
                          ny=100, miny=-3, maxy=3):
         """
         Plot the wave profile
@@ -199,4 +201,4 @@ class surface_elevation:
         plt.plot(x, y, 'r.')
         plt.xlabel("x (m)")
         plt.ylabel("y (m)")
-        plt.title("Wave pattern for a speed of " + str(-1*self.tank.U) + " m/s")
+        plt.title("Wave pattern for a speed of " + str(self.tank.U) + " m/s")
