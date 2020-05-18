@@ -159,7 +159,7 @@ class surface_elevation:
         return (x**2 - self.tank.k0*x*np.tanh(x*self.tank.H) -
                 1*((2*n*np.pi)/(self.tank.B))**2)
 
-    def calc_wave_height(self, nx=500, minx=-1, maxx=60,
+    def calc_wave_height(self, nx=500, minx=-1, maxx=15,
                          ny=100, miny=-3, maxy=3):
         """
         Plot the wave profile

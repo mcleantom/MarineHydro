@@ -30,7 +30,7 @@ def rw(x):
 #    print("The wave resistance = " + str(sum(waves.Rwm)) + " N")
     return sum(waves.Rwm)
 
-speed_range = np.linspace(1,20, 100)
+speed_range = np.linspace(1,15, 100)
 rrw = [rw(x) for x in speed_range]
 pyplot.figure()
-pyplot.plot(-speed_range, rrw)
+pyplot.plot(speed_range, rrw)

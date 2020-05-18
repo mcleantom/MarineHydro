@@ -17,28 +17,29 @@ tank = tank.tank_properties()
 tank.M = 300  # Maximum number of wave harmonics to calculate
 tank.H = 10  # The tank height
 tank.B = 10  # The tank breadth
-tank.U = 6#(9.81/2)**0.5  # The flow speed
+tank.U = 4  #(9.81/2)**0.5  # The flow speed
 tank.reload()
-hull = hull.create_hull("data\\models\\5s.stl")
-hull.mesh.translate([0, 0, 0])  # Translate X, Y, Z
+hull = hull.create_hull("data\\models\\cube.stl.txt")
+hull.mesh.translate([0, 0, 0.0])  # Translate X, Y, Z
 hull.load_hull()
 sources = sources.create_sources(hull, tank)
 
-waves = wave_system.surface_elevation(tank, sources)
-print("The wave resistance = " + str(sum(waves.Rwm)) + " N")
+print(hull.WSA)
+#waves = wave_system.surface_elevation(tank, sources)
+#print("The wave resistance = " + str(sum(waves.Rwm)) + " N")
+#
+#waves.calc_wave_height()
+#plane_normal = [0, 0, 1]  # The plane normal vector
+#plane_origin = [0, 0, 0]  # A point on the plane
+#plane = [plane_origin, plane_normal]  # A plane facing right
+#
+#hull_slice = slicer.make_slice(hull.mesh, plane)
+#
+#x = np.flip(hull_slice.slice_points[:, 0])
+#y = np.flip(hull_slice.slice_points[:, 1])
+#waves.plot(x, y)
 
-waves.calc_wave_height()
-plane_normal = [0, 0, 1]  # The plane normal vector
-plane_origin = [0, 0, 0]  # A point on the plane
-plane = [plane_origin, plane_normal]  # A plane facing right
-
-hull_slice = slicer.make_slice(hull.mesh, plane)
-
-x = np.flip(hull_slice.slice_points[:, 0])
-y = np.flip(hull_slice.slice_points[:, 1])
-waves.plot(x, y)
-
-print(waves.xim)
+#print(waves.xim)
 
 #plane_normal = [0, 0, 1]  # The plane normal vector
 #plane_origin = [0, 0, 0]  # A point on the plane
